@@ -5,6 +5,7 @@ import spark.Session;
 import spark.Spark;
 import spark.template.mustache.MustacheTemplateEngine;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Main {
@@ -12,6 +13,7 @@ public class Main {
 
     public static void main(String[] args) {
         HashMap<String, User> users = new HashMap<>();
+        ArrayList<Hurricane> hurricanes = new ArrayList<>();
 
         Spark.get(
                 "/",
@@ -24,6 +26,7 @@ public class Main {
                     if (user != null) {
                         m.put("name", user.name);
                     }
+                    m.put("hurricanes", hurricanes);
                     return new ModelAndView(m,"home.html");
                 },
                 new MustacheTemplateEngine()
@@ -63,7 +66,27 @@ public class Main {
                     return null;
                 }
         );
+        Spark.post(
+                "/hurricane",
+                (request, response) -> {
+                    Session session = request.session();
+                    String name = session.attribute("userName");
+                    User user = users.get(name);
+                    if (user == null) {
+                        return null;
+                    }
 
+                    String hName = request.queryParams("hName");
+                    String hLocation = request.queryParams("hLocation");
+                    Hurricane.Category hCat = Enum.valueOf(Hurricane.Category.class, request.queryParams("hCat"));
+                    String hImage = request.queryParams("hImage");
+                    Hurricane h = new Hurricane(hName,hLocation,hImage,hCat,user);
+                    hurricanes.add(h);
+
+                    response.redirect("/");
+                    return null;
+                }
+        );
 
 
     }

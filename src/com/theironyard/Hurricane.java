@@ -12,11 +12,13 @@ public class Hurricane {
     String location;
     String image;
     Category category;
+    User user;
 
-    public Hurricane(String name, String location, String image, Category category) {
+    public Hurricane(String name, String location, String image, Category category, User user) {
         this.name = name;
         this.location = location;
         this.image = image;
         this.category = category;
+        this.user = user;
     }
 }
