@@ -32,11 +32,33 @@ Hello, {{name}}! <br><br>
     </select>
     <input type="text" placeholder="Image URL" name="hImage" width="200"/>
     <button type="submit">Submit Hurricane</button>
+</form><br><br>
+
+<form action="/edit-hurricane" method="post">
+    <input type="text" placeholder="Hurricane to Edit" name="hurricaneToEdit"/>
+    <input type="text" placeholder="New Name" name="newName"/>
+    <input type="text" placeholder="New Location" name="newLocation"/>
+    <select name="newCat">
+        <option selected disabled>Category</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+    <input type="text" placeholder="New Image URL" name="newImage" width="200"/>
+    <button type="submit">Update Hurricane</button>
+</form><br><br>
+
+<form action="/delete-hurricane" method="post">
+    <input type="text" placeholder="# of Hurricane to delete" name="hurricaneToDelete"/>
+    <button type="submit">Delete Hurricane</button>
 </form>
 {{/name}}<br>
 
 <table>
     <tr>
+        <th>ID</th>
         <th>Name</th>
         <th>Location</th>
         <th>Category</th>
@@ -45,6 +67,7 @@ Hello, {{name}}! <br><br>
     </tr>
     {{#hurricanes}}
     <tr>
+        <td>{{id}}</td>
         <td>{{name}}</td>
         <td>{{location}}</td>
         <td>{{category}}</td>

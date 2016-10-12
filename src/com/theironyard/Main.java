@@ -19,7 +19,6 @@ public class Main {
         createTable(conn);
 
         HashMap<String, User> users = new HashMap<>();
-//        ArrayList<Hurricane> hurricanes = new ArrayList<>();
 
         Spark.get(
                 "/",
@@ -32,8 +31,9 @@ public class Main {
                     if (user != null) {
                         m.put("name", user.name);
                     }
-//                    m.put("hurricanes", hurricanes);
-                    hurricaneList(conn);
+                    ArrayList<Hurricane> hurricanes = selectHurricane(conn);
+                    m.put("hurricanes", hurricanes);
+                    selectHurricane(conn);
                     return new ModelAndView(m,"home.html");
 
                 },
@@ -83,19 +83,50 @@ public class Main {
                     if (user == null) {
                         return null;
                     }
-                    ArrayList<Hurricane> hurricanes = new ArrayList<>();
-
 
                     String hName = request.queryParams("hName");
                     String hLocation = request.queryParams("hLocation");
                     int hCat = Integer.parseInt(request.queryParams("hCat"));
                     String hImage = request.queryParams("hImage");
-//                    Hurricane h = new Hurricane(hName,hLocation,hImage,hCat);
-//                    hurricanes.add(h);
                     insertHurricane(conn,hName,hLocation,hCat,hImage);
 
                     response.redirect("/");
                     return null;
+                }
+        );
+        Spark.post(
+                "/delete-hurricane",
+                (request, response) -> {
+                    Session session = request.session();
+                    String name = session.attribute("userName");
+                    User user = users.get(name);
+                    if (user == null) {
+                        return null;
+                    }
+                    int hurricane = Integer.parseInt(request.queryParams("hurricaneToDelete"));
+                    deleteHurricane(conn,hurricane);
+                    response.redirect("/");
+                    return null;
+                }
+        );
+        Spark.post(
+                "/edit-hurricane",
+                (request, response) -> {
+                    Session session = request.session();
+                    String name = session.attribute("userName");
+                    User user = users.get(name);
+                    if (user == null) {
+                        return null;
+                    }
+                    int id = Integer.parseInt(request.queryParams("hurricaneToEdit"));
+                    String hName = request.queryParams("newName");
+                    String hLocation = request.queryParams("newLocation");
+                    int hCat = Integer.parseInt(request.queryParams("newCat"));
+                    String hImage = request.queryParams("newImage");
+                    updateHurricane(conn, id, hName, hLocation, hCat, hImage);
+                    response.redirect("/");
+                    return null;
+
                 }
         );
     }
@@ -112,7 +143,7 @@ public class Main {
         stmt.setInt(4,cat);
         stmt.execute();
     }
-    public static void hurricaneList (Connection conn) throws SQLException {
+    public static ArrayList<Hurricane> selectHurricane (Connection conn) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM hurricanes");
         ResultSet results = stmt.executeQuery();
         ArrayList<Hurricane> hurricanes = new ArrayList<>();
@@ -125,6 +156,21 @@ public class Main {
             Hurricane hurricane = new Hurricane(id, name,location,image,cat);
             hurricanes.add(hurricane);
         }
-        System.out.printf(String.valueOf(hurricanes));
+        return hurricanes;
+    }
+    public static void deleteHurricane(Connection conn, int hurricane) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM hurricanes WHERE id = ?");
+        stmt.setInt(1,hurricane);
+        stmt.execute();
+    }
+    public static void updateHurricane(Connection conn, int id, String name, String location, int category, String image) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("UPDATE hurricanes SET name = ?, location = ?, image = ?, category = ? WHERE id = ?");
+
+        stmt.setString(1,name);
+        stmt.setString(2,location);
+        stmt.setString(3,image);
+        stmt.setInt(4,category);
+        stmt.setInt(5,id);
+        stmt.execute();
     }
 }

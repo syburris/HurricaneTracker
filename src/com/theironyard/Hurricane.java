@@ -13,6 +13,7 @@ public class Hurricane {
     User user;
 
     public Hurricane(int id, String name, String location, String image, int category) {
+        this.id = id;
         this.name = name;
         this.location = location;
         this.image = image;
