@@ -6,10 +6,7 @@ import spark.Session;
 import spark.Spark;
 import spark.template.mustache.MustacheTemplateEngine;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -101,5 +98,13 @@ public class Main {
         Statement stmt = conn.createStatement();
         stmt.execute("CREATE TABLE IF NOT EXISTS hurricanes (id IDENTITY, name VARCHAR, location VARCHAR, image VARCHAR," +
                 " category INT)");
+    }
+    public static void insertHurricane(Connection conn) {
+        PreparedStatement stmt = conn.createStatement("INSERT INTO hurricanes VALUES (NULL, ?, ?, ?, ?)");
+        String hName = request.queryParams("hName");
+        String hLocation = request.queryParams("hLocation");
+        int hCat = Integer.parseInt(request.queryParams("hCat"));
+        String hImage = request.queryParams("hImage");
+        stmt.setString(1,name);
     }
 }
