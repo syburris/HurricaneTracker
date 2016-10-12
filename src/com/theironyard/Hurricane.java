@@ -5,18 +5,22 @@ package com.theironyard;
  */
 public class Hurricane {
 
-
+    int id;
     String name;
     String location;
     String image;
     int category;
     User user;
 
-    public Hurricane(String name, String location, String image, int category, User user) {
+    public Hurricane(int id, String name, String location, String image, int category) {
         this.name = name;
         this.location = location;
         this.image = image;
         this.category = category;
-        this.user = user;
+    }
+
+    @Override
+    public String toString() {
+        return id + ". Hurricane: " + name + ", located near " + location + ". It is a category: " + category + " storm." + image;
     }
 }

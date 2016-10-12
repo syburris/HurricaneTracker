@@ -19,7 +19,7 @@ public class Main {
         createTable(conn);
 
         HashMap<String, User> users = new HashMap<>();
-        ArrayList<Hurricane> hurricanes = new ArrayList<>();
+//        ArrayList<Hurricane> hurricanes = new ArrayList<>();
 
         Spark.get(
                 "/",
@@ -32,8 +32,10 @@ public class Main {
                     if (user != null) {
                         m.put("name", user.name);
                     }
-                    m.put("hurricanes", hurricanes);
+//                    m.put("hurricanes", hurricanes);
+                    hurricaneList(conn);
                     return new ModelAndView(m,"home.html");
+
                 },
                 new MustacheTemplateEngine()
         );
@@ -73,7 +75,7 @@ public class Main {
                 }
         );
         Spark.post(
-                "/hurricane",
+                "/create-hurricane",
                 (request, response) -> {
                     Session session = request.session();
                     String name = session.attribute("userName");
@@ -81,13 +83,16 @@ public class Main {
                     if (user == null) {
                         return null;
                     }
+                    ArrayList<Hurricane> hurricanes = new ArrayList<>();
+
 
                     String hName = request.queryParams("hName");
                     String hLocation = request.queryParams("hLocation");
                     int hCat = Integer.parseInt(request.queryParams("hCat"));
                     String hImage = request.queryParams("hImage");
-                    Hurricane h = new Hurricane(hName,hLocation,hImage,hCat,user);
-                    hurricanes.add(h);
+//                    Hurricane h = new Hurricane(hName,hLocation,hImage,hCat);
+//                    hurricanes.add(h);
+                    insertHurricane(conn,hName,hLocation,hCat,hImage);
 
                     response.redirect("/");
                     return null;
@@ -99,17 +104,27 @@ public class Main {
         stmt.execute("CREATE TABLE IF NOT EXISTS hurricanes (id IDENTITY, name VARCHAR, location VARCHAR, image VARCHAR," +
                 " category INT)");
     }
-    public static void insertHurricane(Connection conn) throws SQLException {
-        PreparedStatement stmt = conn.createStatement("INSERT INTO hurricanes VALUES (NULL, ?, ?, ?, ?)");
-        ResultSet results = stmt.executeQuery();
-        String name = request.queryParams("hName");
-        String location = request.queryParams("hLocation");
-        int cat = Integer.parseInt(request.queryParams("hCat"));
-        String image = request.queryParams("hImage");
+    public static void insertHurricane(Connection conn, String name, String location, int cat, String image) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO hurricanes VALUES (NULL, ?, ?, ?, ?)");
         stmt.setString(1,name);
-        stmt.setString(1,location);
-        stmt.setInt(1,cat);
-        stmt.setString(1,image);
+        stmt.setString(2,location);
+        stmt.setString(3,image);
+        stmt.setInt(4,cat);
         stmt.execute();
+    }
+    public static void hurricaneList (Connection conn) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM hurricanes");
+        ResultSet results = stmt.executeQuery();
+        ArrayList<Hurricane> hurricanes = new ArrayList<>();
+        while (results.next()) {
+            int id = results.getInt("id");
+            String name = results.getString("name");
+            String location = results.getString("location");
+            String image = results.getString("image");
+            int cat = results.getInt("category");
+            Hurricane hurricane = new Hurricane(id, name,location,image,cat);
+            hurricanes.add(hurricane);
+        }
+        System.out.printf(String.valueOf(hurricanes));
     }
 }
