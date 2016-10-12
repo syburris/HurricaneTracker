@@ -99,12 +99,17 @@ public class Main {
         stmt.execute("CREATE TABLE IF NOT EXISTS hurricanes (id IDENTITY, name VARCHAR, location VARCHAR, image VARCHAR," +
                 " category INT)");
     }
-    public static void insertHurricane(Connection conn) {
+    public static void insertHurricane(Connection conn) throws SQLException {
         PreparedStatement stmt = conn.createStatement("INSERT INTO hurricanes VALUES (NULL, ?, ?, ?, ?)");
-        String hName = request.queryParams("hName");
-        String hLocation = request.queryParams("hLocation");
-        int hCat = Integer.parseInt(request.queryParams("hCat"));
-        String hImage = request.queryParams("hImage");
+        ResultSet results = stmt.executeQuery();
+        String name = request.queryParams("hName");
+        String location = request.queryParams("hLocation");
+        int cat = Integer.parseInt(request.queryParams("hCat"));
+        String image = request.queryParams("hImage");
         stmt.setString(1,name);
+        stmt.setString(1,location);
+        stmt.setInt(1,cat);
+        stmt.setString(1,image);
+        stmt.execute();
     }
 }
