@@ -164,21 +164,6 @@ public class Main {
         }
         return null;
     }
-//    public static Hurricane selectHurricanes(Connection conn, int id) throws SQLException {
-//        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users INNER JOIN hurricanes ON " +
-//                "hurricanes.submitter = users.name WHERE users.id = ?");
-//        stmt.setInt(1,id);
-//        ResultSet results = stmt.executeQuery();
-//        while (results.next()) {
-//            String name = results.getString("hurricanes.name");
-//            String location = results.getString("hurricanes.location");
-//            String image = results.getString("hurricanes.image");
-//            int category = results.getInt("hurricanes.category");
-//            String submitter = results.getString("users.name");
-//            return new Hurricane(id,name,location,image,category,submitter);
-//        }
-//        return null;
-//    }
     public static ArrayList<Hurricane> selectHurricanes (Connection conn, String filter, String filter2) throws SQLException {
         if (filter != null && !filter.isEmpty()) {
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM hurricanes WHERE name = ?");
