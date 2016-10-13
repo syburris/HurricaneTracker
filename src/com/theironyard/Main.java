@@ -31,9 +31,11 @@ public class Main {
                     if (user != null) {
                         m.put("name", user.name);
                     }
-                    ArrayList<Hurricane> hurricanes = selectHurricane(conn);
+                    String filter = request.queryParams("filter");
+                    ArrayList<Hurricane> hurricanes = selectHurricane(conn,filter);
                     m.put("hurricanes", hurricanes);
-                    selectHurricane(conn);
+                    String nameFilter = request.queryParams("filter");
+                    selectHurricane(conn, nameFilter);
                     return new ModelAndView(m,"home.html");
 
                 },
@@ -143,20 +145,39 @@ public class Main {
         stmt.setInt(4,cat);
         stmt.execute();
     }
-    public static ArrayList<Hurricane> selectHurricane (Connection conn) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM hurricanes");
-        ResultSet results = stmt.executeQuery();
-        ArrayList<Hurricane> hurricanes = new ArrayList<>();
-        while (results.next()) {
-            int id = results.getInt("id");
-            String name = results.getString("name");
-            String location = results.getString("location");
-            String image = results.getString("image");
-            int cat = results.getInt("category");
-            Hurricane hurricane = new Hurricane(id, name,location,image,cat);
-            hurricanes.add(hurricane);
+    public static ArrayList<Hurricane> selectHurricane (Connection conn, String filter) throws SQLException {
+        if (filter != null && !filter.isEmpty()) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM hurricanes WHERE name = ?");
+            stmt.setString(1,filter);
+            ResultSet results = stmt.executeQuery();
+            ArrayList<Hurricane> hurricanes = new ArrayList<>();
+            while (results.next()) {
+                int id = results.getInt("id");
+                String name = results.getString("name");
+                String location = results.getString("location");
+                String image = results.getString("image");
+                int cat = results.getInt("category");
+                Hurricane hurricane = new Hurricane(id, name,location,image,cat);
+                hurricanes.add(hurricane);
+            }
+            return hurricanes;
         }
-        return hurricanes;
+        else {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM hurricanes");
+            ResultSet results = stmt.executeQuery();
+            ArrayList<Hurricane> hurricanes = new ArrayList<>();
+            while (results.next()) {
+                int id = results.getInt("id");
+                String name = results.getString("name");
+                String location = results.getString("location");
+                String image = results.getString("image");
+                int cat = results.getInt("category");
+                Hurricane hurricane = new Hurricane(id, name,location,image,cat);
+                hurricanes.add(hurricane);
+            }
+            return hurricanes;
+        }
+
     }
     public static void deleteHurricane(Connection conn, int hurricane) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("DELETE FROM hurricanes WHERE id = ?");
