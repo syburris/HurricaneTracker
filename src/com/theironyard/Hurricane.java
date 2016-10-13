@@ -10,14 +10,16 @@ public class Hurricane {
     String location;
     String image;
     int category;
-    User user;
+    String submitter;
+    int userId;
 
-    public Hurricane(int id, String name, String location, String image, int category) {
+    public Hurricane(int id, String name, String location, String image, int category, String submitter) {
         this.id = id;
         this.name = name;
         this.location = location;
         this.image = image;
         this.category = category;
+        this.submitter = submitter;
     }
 
     @Override
