@@ -135,7 +135,7 @@ public class Main {
     public static void createTables(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
         stmt.execute("CREATE TABLE IF NOT EXISTS hurricanes (id IDENTITY, name VARCHAR, location VARCHAR, image VARCHAR," +
-                " category INT, submitter VARCHAR, user_id INT)");
+                " category INT, submitter VARCHAR)");
         stmt.execute("CREATE TABLE IF NOT EXISTS users (id IDENTITY, name VARCHAR, password VARCHAR)");
     }
     public static void insertHurricane(Connection conn, String name, String location, int cat, String image, String submitter) throws SQLException {
@@ -166,7 +166,7 @@ public class Main {
     }
     public static Hurricane selectHurricanes(Connection conn, int id) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users INNER JOIN hurricanes ON " +
-                "hurricanes.user_id = users.id WHERE hurricanes.id = ?");
+                "hurricanes.submitter = users.name WHERE users.id = ?");
         stmt.setInt(1,id);
         ResultSet results = stmt.executeQuery();
         while (results.next()) {
