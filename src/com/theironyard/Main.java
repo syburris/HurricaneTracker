@@ -31,10 +31,10 @@ public class Main {
                         m.put("name", user.name);
                     }
                     String filter = request.queryParams("filter");
-                    ArrayList<Hurricane> hurricanes = hurricaneFilter(conn,filter,user);
+                    String filter2 = request.queryParams("filter2");
+                    ArrayList<Hurricane> hurricanes = selectHurricanes(conn,filter,filter2);
                     m.put("hurricanes", hurricanes);
-                    String nameFilter = request.queryParams("filter");
-                    hurricaneFilter(conn, nameFilter,user);
+                    selectHurricanes(conn, filter,filter2);
                     return new ModelAndView(m,"home.html");
 
                 },
@@ -164,22 +164,22 @@ public class Main {
         }
         return null;
     }
-    public static Hurricane selectHurricanes(Connection conn, int id) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users INNER JOIN hurricanes ON " +
-                "hurricanes.submitter = users.name WHERE users.id = ?");
-        stmt.setInt(1,id);
-        ResultSet results = stmt.executeQuery();
-        while (results.next()) {
-            String name = results.getString("hurricanes.name");
-            String location = results.getString("hurricanes.location");
-            String image = results.getString("hurricanes.image");
-            int category = results.getInt("hurricanes.category");
-            String submitter = results.getString("users.name");
-            return new Hurricane(id,name,location,image,category,submitter);
-        }
-        return null;
-    }
-    public static ArrayList<Hurricane> hurricaneFilter (Connection conn, String filter, User user) throws SQLException {
+//    public static Hurricane selectHurricanes(Connection conn, int id) throws SQLException {
+//        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users INNER JOIN hurricanes ON " +
+//                "hurricanes.submitter = users.name WHERE users.id = ?");
+//        stmt.setInt(1,id);
+//        ResultSet results = stmt.executeQuery();
+//        while (results.next()) {
+//            String name = results.getString("hurricanes.name");
+//            String location = results.getString("hurricanes.location");
+//            String image = results.getString("hurricanes.image");
+//            int category = results.getInt("hurricanes.category");
+//            String submitter = results.getString("users.name");
+//            return new Hurricane(id,name,location,image,category,submitter);
+//        }
+//        return null;
+//    }
+    public static ArrayList<Hurricane> selectHurricanes (Connection conn, String filter, String filter2) throws SQLException {
         if (filter != null && !filter.isEmpty()) {
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM hurricanes WHERE name = ?");
             stmt.setString(1,filter);
@@ -193,6 +193,24 @@ public class Main {
                 int cat = results.getInt("category");
                 String submitter = results.getString("submitter");
                 Hurricane hurricane = new Hurricane(id, name,location,image,cat,submitter);
+                hurricanes.add(hurricane);
+            }
+            return hurricanes;
+        }
+        else if (filter2 != null && !filter2.isEmpty()) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM hurricanes INNER JOIN users " +
+                    "ON hurricanes.submitter = users.name WHERE users.name = ?");
+            stmt.setString(1,filter2);
+            ResultSet results = stmt.executeQuery();
+            ArrayList<Hurricane> hurricanes = new ArrayList<>();
+            while (results.next()) {
+                int id = results.getInt("hurricanes.id");
+                String name = results.getString("hurricanes.name");
+                String location = results.getString("hurricanes.location");
+                String image = results.getString("hurricanes.image");
+                int cat = results.getInt("hurricanes.category");
+                String submitter = results.getString("submitter");
+                Hurricane hurricane = new Hurricane(id,name,location,image,cat,submitter);
                 hurricanes.add(hurricane);
             }
             return hurricanes;
@@ -213,7 +231,6 @@ public class Main {
             }
             return hurricanes;
         }
-
     }
     public static void deleteHurricane(Connection conn, int hurricane) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("DELETE FROM hurricanes WHERE id = ?");
@@ -222,7 +239,6 @@ public class Main {
     }
     public static void updateHurricane(Connection conn, int id, String name, String location, int category, String image) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("UPDATE hurricanes SET name = ?, location = ?, image = ?, category = ? WHERE id = ?");
-
         stmt.setString(1,name);
         stmt.setString(2,location);
         stmt.setString(3,image);
