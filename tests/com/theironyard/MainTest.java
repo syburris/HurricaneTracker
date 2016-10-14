@@ -44,9 +44,20 @@ public class MainTest {
         Main.insertHurricane(conn, "Matt", "Chuck", 2, "www.google.com", "Steven");
         Main.insertHurricane(conn, "Floyd", "NC", 3, "www.google.com", "Andy");
         Main.insertHurricane(conn, "Katrina", "Nola", 3, "www.google.com", "Sam");
-        ArrayList<Hurricane> hurricanes = Main.selectHurricanes(conn,"","");
         Main.deleteHurricane(conn,1);
+        ArrayList<Hurricane> hurricanes = Main.selectHurricanes(conn,"","");
         assertTrue(hurricanes.size() == 2);
+    }
+
+    @Test
+    public void testUpdateHurricane() throws SQLException {
+        Connection conn = startConnection();
+        Main.insertHurricane(conn, "Matt", "Chuck", 2, "www.google.com", "Steven");
+        Main.insertHurricane(conn, "Floyd", "NC", 3, "www.google.com", "Andy");
+        Main.insertHurricane(conn, "Katrina", "Nola", 3, "www.google.com", "Sam");
+        Main.updateHurricane(conn, 1, "Alex", "NC", 4, "www.google.com");
+        ArrayList<Hurricane> hurricanes = Main.selectHurricanes(conn, "", "");
+        assertTrue(hurricanes.get(0).name == "Alex");
     }
 
 }
