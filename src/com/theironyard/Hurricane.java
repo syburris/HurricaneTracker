@@ -12,6 +12,7 @@ public class Hurricane {
     int category;
     String submitter;
     int userId;
+    boolean isMe;
 
     public Hurricane(int id, String name, String location, String image, int category, String submitter) {
         this.id = id;
