@@ -131,43 +131,7 @@ public class Main {
 
                 }
         );
-        Spark.get(
-                "/edit-hurricane",
-                (request, response) -> {
-                    int id = Integer.valueOf(request.queryParams("id"));
-                    Hurricane hurricane = hurrricanes.get(id);
-                    HashMap m = new HashMap();
-                    m.put("id",id);
-                    return new ModelAndView(null,"edit.html");
-                },
-                new MustacheTemplateEngine()
-        );
-        Spark.post(
-                "/edit-hurricane",
-                (request, response) -> {
-                    Session session = request.session();
-                    String name = session.attribute("userName");
-                    User user = selectUser(conn,name);
 
-                    if (user == null) {
-                        return null;
-                    }
-
-                    int id = Integer.valueOf(request.queryParams("id"));
-
-                    Hurricane hurricane = hurricanes.get(id);
-
-                    if (hurricane == null || !hurricane.isMe) {
-                        return null;
-                    }
-                    String hName = request.queryParams("newName");
-                    String hLocation = request.queryParams("newLocation");
-                    int hCat = Integer.parseInt(request.queryParams("newCat"));
-                    String hImage = request.queryParams("newImage");
-
-                    return null;
-                }
-        );
     }
     public static void createTables(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
